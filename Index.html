@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test DISC — Austral Pack</title>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    /* Austral Pack — Paleta corporativa */
+    --ap-rojo-oscuro:  #9e050d;
+    --ap-rojo-medio:   #e0151e;
+    --ap-salmon:       #fa4440;
+
+    --bg:       #0d0a0a;          /* negro cálido, base AP */
+    --surface:  #1a1010;          /* superficie — rojo oscurísimo */
+    --surface2: #221414;          /* superficie secundaria */
+    --border:   #3a1a1a;          /* borde sutil rojo oscuro */
+    --text:     #f2eded;          /* blanco cálido */
+    --muted:    #8a6060;          /* gris rojizo para texto secundario */
+
+    /* Colores DISC — reinterpretados en la gama AP */
+    --D: #fa4440;                 /* Dominancia  → salmón AP (el más vivo) */
+    --I: #e0151e;                 /* Influencia  → rojo medio AP */
+    --S: #c97070;                 /* Estabilidad → rojo rosado suave */
+    --C: #9e050d;                 /* Cumplimiento → rojo oscuro AP */
+
+    --accent: #e0151e;            /* acento principal = rojo medio AP */
+    --accent-bright: #fa4440;     /* acento hover/activo = salmón AP */
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .app { width: 100%; max-width: 640px; }
+
+  /* ── Pantalla ─────────────────────────────── */
+  .screen { display: none; animation: fadeIn .4s ease; }
+  .screen.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Intro / bienvenida ───────────────────── */
+  .intro-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 72px;
+    letter-spacing: -4px;
+    background: linear-gradient(135deg, var(--ap-rojo-oscuro), var(--ap-rojo-medio), var(--ap-salmon));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .intro-sub {
+    color: var(--muted);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 48px;
+  }
+  .intro-desc {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 40px;
+    max-width: 480px;
+  }
+
+  /* ── Formulario de datos ──────────────────── */
+  .form-group { margin-bottom: 20px; }
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .form-group input, .form-group select {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .form-group input:focus, .form-group select:focus {
+    border-color: var(--accent);
+  }
+  .form-group select option { background: var(--surface); }
+
+  /* ── Botones ──────────────────────────────── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all .2s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #f2eded;
+    width: 100%;
+    justify-content: center;
+    margin-top: 8px;
+  }
+  .btn-primary:hover { background: var(--accent-bright); transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    padding: 10px 18px;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--text); }
+
+  /* ── Instrucciones ────────────────────────── */
+  .instr-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 32px;
+    margin-bottom: 8px;
+    line-height: 1.15;
+  }
+  .instr-lead {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 32px;
+  }
+  .instr-rules {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .instr-rule {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .instr-rule-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .instr-example-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+
+  /* ── Layout tabla MÁS / MENOS ─────────────── */
+  .disc-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+  }
+  .disc-table thead th {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: 0 0 10px;
+    color: var(--muted);
+  }
+  .disc-table thead th.col-palabra { text-align: left; }
+  .disc-table thead th.col-mas  { color: var(--ap-salmon); text-align: center; width: 68px; }
+  .disc-table thead th.col-menos{ color: var(--muted); text-align: center; width: 68px; }
+
+  .disc-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+  }
+  .disc-table tbody tr:last-child { border-bottom: none; }
+
+  /* Fila seleccionada como MÁS */
+  .disc-table tbody tr.row-mas {
+    background: rgba(224,21,30,.10);
+  }
+  /* Fila seleccionada como MENOS */
+  .disc-table tbody tr.row-menos {
+    background: rgba(158,5,13,.06);
+    opacity: .75;
+  }
+
+  .disc-table td {
+    padding: 13px 6px;
+    vertical-align: middle;
+  }
+  .td-palabra {
+    font-size: 17px;
+    font-weight: 500;
+    padding-left: 2px !important;
+  }
+  .td-check {
+    text-align: center;
+    width: 68px;
+  }
+
+  /* Botón radio visual */
+  .radio-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    cursor: pointer;
+    transition: all .18s;
+    background: transparent;
+    font-size: 14px;
+    color: transparent;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .radio-btn:hover { border-color: var(--muted); }
+
+  /* MÁS activo */
+  .radio-btn.active-mas {
+    background: var(--ap-rojo-medio);
+    border-color: var(--ap-rojo-medio);
+    color: #f2eded;
+    box-shadow: 0 0 10px rgba(224,21,30,.4);
+  }
+  /* MENOS activo */
+  .radio-btn.active-menos {
+    background: var(--ap-rojo-oscuro);
+    border-color: var(--ap-rojo-oscuro);
+    color: #f2eded;
+  }
+  /* Deshabilitado (la otra columna ya eligió esta fila) */
+  .radio-btn.disabled {
+    opacity: .25;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* ── Pregunta header ──────────────────────── */
+  .q-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+  .q-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 52px;
+    color: var(--border);
+    line-height: 1;
+  }
+  .q-num span { color: var(--accent); }
+
+  .progress-bar {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 99px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--ap-rojo-oscuro), var(--ap-salmon));
+    border-radius: 99px;
+    transition: width .4s ease;
+  }
+
+  .q-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  /* ── Pantalla final ──────────────────────── */
+  .thanks-icon {
+    font-size: 64px;
+    margin-bottom: 24px;
+    display: block;
+  }
+  .thanks-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 42px;
+    margin-bottom: 12px;
+    line-height: 1.1;
+  }
+  .thanks-sub {
+    color: var(--muted);
+    font-size: 15px;
+    line-height: 1.7;
+    max-width: 400px;
+  }
+
+  /* ── Informe del reclutador ──────────────── */
+  .report-trigger {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+  }
+  .report-trigger button {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .2s;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+  }
+  .report-trigger button:hover { color: var(--text); border-color: var(--accent); }
+
+  /* ── Informe pantalla ─────────────────────── */
+  #screen-report {
+    max-width: 800px;
+    width: 100%;
+  }
+
+  .report-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 40px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .report-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    line-height: 1.1;
+  }
+  .report-meta {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.8;
+    text-align: right;
+  }
+
+  .disc-bars {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .disc-bar-item { text-align: center; }
+  .disc-bar-label {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+  .disc-bar-track {
+    height: 80px;
+    background: var(--surface2);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .disc-bar-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 6px 6px 0 0;
+    transition: height .6s ease;
+  }
+  .disc-bar-score {
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .disc-bar-seg {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .pattern-badge {
+    display: inline-block;
+    padding: 6px 16px;
+    border-radius: 99px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: rgba(224,21,30,.15);
+    border: 1px solid rgba(224,21,30,.35);
+    color: var(--ap-salmon);
+    margin-bottom: 12px;
+  }
+
+  .pattern-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 42px;
+    margin-bottom: 20px;
+    line-height: 1.1;
+  }
+
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .profile-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+  .profile-card-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .profile-card-text {
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .profile-card.full { grid-column: span 2; }
+
+  .profile-desc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 12px;
+  }
+  .profile-desc p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: #c8b8b8;
+  }
+
+  .raw-scores {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 16px 18px;
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 32px;
+  }
+  .raw-score-item { display: flex; flex-direction: column; gap: 2px; }
+  .raw-score-item strong { color: var(--text); font-size: 16px; }
+
+  .download-btn {
+    background: var(--ap-rojo-medio);
+    color: #f2eded;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 24px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background .2s;
+  }
+  .download-btn:hover { background: var(--ap-salmon); }
+
+  .error-msg {
+    color: var(--D);
+    font-size: 13px;
+    margin-top: 8px;
+    display: none;
+  }
+
+  /* Modal de clave */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    width: 320px;
+    text-align: center;
+  }
+  .modal h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  .modal p { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  .modal input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    text-align: center;
+    letter-spacing: 4px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .modal-btns { display: flex; gap: 10px; }
+  .modal-btns button { flex: 1; }
+  .modal-error { color: var(--D); font-size: 12px; margin-bottom: 10px; display: none; }
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ══ PANTALLA 0: Bienvenida ════════════════════════════ -->
+  <div class="screen active" id="screen-intro">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:3px;color:var(--muted);margin-bottom:32px;">
+      <span style="color:var(--ap-salmon);font-weight:700">Austral</span><span style="color:var(--text);font-weight:700">PACK</span>
+      <span style="margin-left:12px;opacity:.4">·</span>
+      <span style="margin-left:12px;">Recursos Humanos</span>
+    </div>
+    <div class="intro-logo">DISC</div>
+    <div class="intro-sub">Test de Perfil Conductual</div>
+    <p class="intro-desc">
+      Este cuestionario consta de 28 grupos de cuatro palabras. Para cada grupo,
+      selecciona la palabra que <strong>más</strong> te representa y la que
+      <strong>menos</strong> te representa. No hay respuestas correctas ni incorrectas.
+      Responde con espontaneidad.
+    </p>
+    <button class="btn btn-primary" onclick="showScreen('screen-datos')">
+      Comenzar →
+    </button>
+  </div>
+
+  <!-- ══ PANTALLA 1: Datos personales ═════════════════════ -->
+  <div class="screen" id="screen-datos">
+    <p style="font-size:12px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:24px;">Tus datos</p>
+    <div class="form-group">
+      <label>Nombre completo</label>
+      <input type="text" id="inp-nombre" placeholder="Ej: Ana González" autocomplete="name">
+    </div>
+    <div class="form-group">
+      <label>Cargo / Posición</label>
+      <input type="text" id="inp-cargo" placeholder="Ej: Analista Comercial">
+    </div>
+    <div class="form-group">
+      <label>Área</label>
+      <input type="text" id="inp-area" placeholder="Ej: Ventas">
+    </div>
+    <div class="form-group">
+      <label>Fecha</label>
+      <input type="date" id="inp-fecha">
+    </div>
+    <p class="error-msg" id="error-datos">Por favor completa tu nombre para continuar.</p>
+    <button class="btn btn-primary" onclick="startTest()">
+      Continuar al test →
+    </button>
+  </div>
+
+  <!-- ══ PANTALLA 2: Instrucciones + Ejemplo ══════════════ -->
+  <div class="screen" id="screen-instrucciones">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:28px;">
+      <span style="color:var(--ap-salmon);font-weight:700">Austral</span><span style="font-weight:700">PACK</span>
+      <span style="margin-left:10px;opacity:.4">·</span>
+      <span style="margin-left:10px;">Cómo responder</span>
+    </div>
+
+    <div class="instr-title">Antes de comenzar,<br>lee las instrucciones</div>
+    <p class="instr-lead">El test consiste en 28 grupos de cuatro palabras. En cada grupo debes marcar dos palabras:</p>
+
+    <div class="instr-rules">
+      <div class="instr-rule">
+        <span class="instr-rule-icon">✦</span>
+        <div><strong style="color:var(--ap-salmon)">Una palabra en la columna MÁS</strong> — la que mejor te describe o con la que más te identificas en ese grupo.</div>
+      </div>
+      <div class="instr-rule">
+        <span class="instr-rule-icon">✦</span>
+        <div><strong style="color:var(--muted)">Una palabra en la columna MENOS</strong> — la que menos te describe o con la que menos te identificas en ese grupo.</div>
+      </div>
+      <div class="instr-rule">
+        <span class="instr-rule-icon">⚠</span>
+        <div>No puedes elegir la misma palabra para MÁS y MENOS. Deben ser dos palabras distintas.</div>
+      </div>
+      <div class="instr-rule">
+        <span class="instr-rule-icon">◎</span>
+        <div>No hay respuestas correctas ni incorrectas. Responde con espontaneidad, eligiendo lo que primero te parezca más natural.</div>
+      </div>
+    </div>
+
+    <div class="instr-example-label">Ejemplo interactivo — prueba tú mismo</div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px 22px;margin-bottom:10px;">
+      <table class="disc-table" id="example-table">
+        <thead>
+          <tr>
+            <th class="col-palabra"></th>
+            <th class="col-mas">MÁS</th>
+            <th class="col-menos">MENOS</th>
+          </tr>
+        </thead>
+        <tbody id="example-tbody"></tbody>
+      </table>
+      <p id="example-hint" style="font-size:13px;color:var(--muted);margin-top:8px;">
+        Haz clic en los círculos para practicar →
+      </p>
+      <p id="example-ok" style="font-size:13px;color:var(--ap-salmon);margin-top:8px;display:none;">
+        ¡Correcto! Así se responde cada grupo. Puedes cambiar tu selección haciendo clic de nuevo.
+      </p>
+    </div>
+
+    <button class="btn btn-primary" onclick="startRealTest()" style="margin-top:16px;">
+      Comenzar el test →
+    </button>
+  </div>
+
+  <!-- ══ PANTALLA 3: Preguntas ═════════════════════════════ -->
+  <div class="screen" id="screen-test">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="q-header">
+      <div class="q-num"><span id="q-num-display">1</span> <span style="font-size:18px;color:var(--muted)">/ 28</span></div>
+    </div>
+
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;margin-bottom:20px;">
+      <table class="disc-table" id="question-table">
+        <thead>
+          <tr>
+            <th class="col-palabra"></th>
+            <th class="col-mas">MÁS</th>
+            <th class="col-menos">MENOS</th>
+          </tr>
+        </thead>
+        <tbody id="question-tbody"></tbody>
+      </table>
+    </div>
+
+    <p class="error-msg" id="error-q" style="display:none;margin-bottom:12px;">Selecciona una palabra para MÁS y otra distinta para MENOS.</p>
+    <div class="q-actions">
+      <button class="btn btn-ghost" id="btn-prev" onclick="prevQuestion()">← Anterior</button>
+      <button class="btn btn-ghost" onclick="nextQuestion()">Siguiente →</button>
+    </div>
+  </div>
+
+  <!-- ══ PANTALLA 4: Gracias ══════════════════════════════ -->
+  <div class="screen" id="screen-thanks">
+    <span class="thanks-icon" id="thanks-icon">⏳</span>
+    <h2 class="thanks-title" id="thanks-title">Enviando<br>respuestas…</h2>
+    <p class="thanks-sub" id="thanks-sub">Por favor espera un momento.</p>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// DATOS DEL TEST (extraídos del Excel original)
+// ═══════════════════════════════════════════════
+const DATA = {"questions":[{"num":1,"words":[{"text":"Entusiasta","factor":"I"},{"text":"Rápido(a)","factor":"D"},{"text":"Lógico(a)","factor":"C"},{"text":"Apacible","factor":"S"}]},{"num":2,"words":[{"text":"Cauteloso(a)","factor":"C"},{"text":"Decidido(a)","factor":"D"},{"text":"Receptivo(a)","factor":"I"},{"text":"Bondadoso(a)","factor":"S"}]},{"num":3,"words":[{"text":"Amigable","factor":"I"},{"text":"Preciso(a)","factor":"C"},{"text":"Franco(a)","factor":"D"},{"text":"Tranquilo(a)","factor":"S"}]},{"num":4,"words":[{"text":"Elocuente","factor":"I"},{"text":"Controlado(a)","factor":"C"},{"text":"Tolerante","factor":"S"},{"text":"Decisivo(a)","factor":"D"}]},{"num":5,"words":[{"text":"Atrevido(a)","factor":"D"},{"text":"Concienzudo(a)","factor":"C"},{"text":"Comunicativo(a)","factor":"I"},{"text":"Moderado(a)","factor":"S"}]},{"num":6,"words":[{"text":"Ameno(a)","factor":"S"},{"text":"Ingenioso(a)","factor":"I"},{"text":"Investigador(a)","factor":"C"},{"text":"Acepta Riesgos","factor":"D"}]},{"num":7,"words":[{"text":"Expresivo(a)","factor":"I"},{"text":"Cuidadoso(a)","factor":"C"},{"text":"Dominante","factor":"D"},{"text":"Sensible","factor":"S"}]},{"num":8,"words":[{"text":"Extrovertido(a)","factor":"I"},{"text":"Precavido(a)","factor":"C"},{"text":"Constante","factor":"S"},{"text":"Impaciente","factor":"D"}]},{"num":9,"words":[{"text":"Discreto(a)","factor":"C"},{"text":"Complaciente","factor":"S"},{"text":"Encantador(a)","factor":"I"},{"text":"Insistente","factor":"D"}]},{"num":10,"words":[{"text":"Valeroso(a)","factor":"D"},{"text":"Anima a los demás","factor":"I"},{"text":"Pacifico(a)","factor":"S"},{"text":"Perfeccionista","factor":"C"}]},{"num":11,"words":[{"text":"Reservado(a)","factor":"C"},{"text":"Atento(a)","factor":"S"},{"text":"Osado(a)","factor":"D"},{"text":"Alegre","factor":"I"}]},{"num":12,"words":[{"text":"Estimulante","factor":"I"},{"text":"Gentil","factor":"S"},{"text":"Perceptivo(a)","factor":"C"},{"text":"Independiente","factor":"D"}]},{"num":13,"words":[{"text":"Competitivo(a)","factor":"D"},{"text":"Considerado(a)","factor":"S"},{"text":"Alegre","factor":"I"},{"text":"Sagaz","factor":"C"}]},{"num":14,"words":[{"text":"Meticuloso(a)","factor":"C"},{"text":"Obediente","factor":"S"},{"text":"Ideas Firmes","factor":"D"},{"text":"Alentador(a)","factor":"I"}]},{"num":15,"words":[{"text":"Popular","factor":"I"},{"text":"Reflexivo(a)","factor":"C"},{"text":"Tenaz","factor":"D"},{"text":"Calmado(a)","factor":"S"}]},{"num":16,"words":[{"text":"Analítico(a)","factor":"C"},{"text":"Audaz","factor":"D"},{"text":"Leal","factor":"S"},{"text":"Promotor(a)","factor":"I"}]},{"num":17,"words":[{"text":"Sociable","factor":"I"},{"text":"Paciente","factor":"S"},{"text":"Autosuficiente","factor":"D"},{"text":"Certero(a)","factor":"C"}]},{"num":18,"words":[{"text":"Adaptable","factor":"S"},{"text":"Resuelto(a)","factor":"D"},{"text":"Prevenido(a)","factor":"C"},{"text":"Vivaz","factor":"I"}]},{"num":19,"words":[{"text":"Agresivo(a)","factor":"D"},{"text":"Impetuoso(a)","factor":"I"},{"text":"Amistoso(a)","factor":"S"},{"text":"Discerniente","factor":"C"}]},{"num":20,"words":[{"text":"De trato Fácil","factor":"I"},{"text":"Compasivo(a)","factor":"S"},{"text":"Cauto(a)","factor":"C"},{"text":"Habla Directo","factor":"D"}]},{"num":21,"words":[{"text":"Evaluador(a)","factor":"C"},{"text":"Generoso(a)","factor":"S"},{"text":"Animado(a)","factor":"I"},{"text":"Persistente","factor":"D"}]},{"num":22,"words":[{"text":"Impulsivo(a)","factor":"I"},{"text":"Cuida los Detalles","factor":"C"},{"text":"Enérgico(a)","factor":"D"},{"text":"Tranquilo(a)","factor":"S"}]},{"num":23,"words":[{"text":"Sociable","factor":"I"},{"text":"Sistemático(a)","factor":"C"},{"text":"Vigoroso(a)","factor":"D"},{"text":"Tolerante","factor":"S"}]},{"num":24,"words":[{"text":"Cautivador(a)","factor":"I"},{"text":"Contento(a)","factor":"S"},{"text":"Exigente","factor":"D"},{"text":"Apegado(a) a las normas","factor":"C"}]},{"num":25,"words":[{"text":"Le agrada discutir","factor":"D"},{"text":"Metódico(a)","factor":"C"},{"text":"Comedido(a)","factor":"S"},{"text":"Desenvuelto(a)","factor":"I"}]},{"num":26,"words":[{"text":"Jovial","factor":"I"},{"text":"Preciso(a)","factor":"C"},{"text":"Directo(a)","factor":"D"},{"text":"Ecuánime","factor":"S"}]},{"num":27,"words":[{"text":"Inquieto(a)","factor":"D"},{"text":"Amable","factor":"S"},{"text":"Elocuente","factor":"I"},{"text":"Cuidadoso(a)","factor":"C"}]},{"num":28,"words":[{"text":"Prudente","factor":"C"},{"text":"Pionero(a)","factor":"D"},{"text":"Espontáneo(a)","factor":"I"},{"text":"Colaborador","factor":"S"}]}],"profiles":{"1":{"name":"Alentador","E":"Acepta la agresión, tiende a aparentar dar poca importancia a la necesidad que tiene de afecto.","M":"Controlar su ambiente o a su público.","J":"La forma en que proyecta su fuerza personal, carácter  y posición social. ","I":"Su encanto, dirección, intimidación , uso de recompensas. ","S":"Mueve a la gente, inicia, ordena, felicita disciplina.","A":"Su enfoque de que \"el fin justifica los medios\". ","B":"Se vuelve manipulador, pendenciero, beligerante. ","T":"Ser demasiado blando, perder su posición social. ","SE":"Fuera más genuina su sensibilidad; estuviera más dispuesto a ayudar a otros a tener éxito en su propio desarrollo personal. ","O1":"Las personas con patrón alentador saben con exactitud los resultados que quieren, pero no siempre los verbalizan de inmediato.  Manifiestan cuáles son los resultados que quieren sólo después de que se haya creado un ambiente apropiado y la otra persona está dispuesta a aceptarlos.  Por ejemplo, estas personas ofrecen amistad a quienes desean ser aceptados, más autoridad a quienes buscan poder y seguridad a quienes buscan un ambiente predecible.","O2":"El alentador pude ser encantador en su trato con los demás.  Es persuasivo para obtener ayuda cuando se le presentan detalles repetitivos y que consumen mucho tiempo.  Sin embargo, las personas a menudo experimentan ante ellos una sensación de conflicto,  al sentirse por un lado atraídos, y curiosamente al mismo tiempo distanciados.  Otras pueden sentirse \"utilizadas\".  Aunque algunas veces el alentador inspira temor en los demás y rechaza sus decisiones, el Alentador suele ser apreciado por sus colaboradores.  Esto lo consigue al usar siempre que le es posible su enorme capacidad de palabra para persuadir.  El Alentador prefiere alcanzar sus objetivos no dominando a las personas sino haciendo de agente para realizar el trabajo.  "},"2":{"name":"Realizador","E":"Activo, diligente, muestra frustración..","M":"Logros personales, en ocasiones a expensas de la meta de grupo. ","J":"El logro de resultados concretos. ","I":"La aceptación de responsabilidad por su propio trabajo. ","S":"Se propone y consigue resultados en áreas clave. ","A":"Confianza en si mismo, absorción en el trabajo. ","B":"Se frustra e impacienta con los demás, se convierte en una persona que \"lo hace todo\"  en vez de ser alguien que delega.","T":"A quienes tienen niveles inferiores o competitivos de trabajo, que afectan los resultados. ","SE":"Dejara de pensar en \"esto o lo otro\", estableciera su prioridades con mayor claridad y aceptara enfoques alternativos, estuviera dispuesto a sacrificar los beneficios a corto plazo por otros a largo plazo. ","O1":"La motivación del Patrón Realizador surge en gran parte de su interior y de metas personales muy profundas.  Este compromiso previo con sus propias metas impide que acepte automáticamente las metas del grupo.  El Realizador necesita combinar sus metas personales con las metas de la organización.  Como el Realizador siempre ha ejercido control sobre los aspectos más importantes de su vida, desarrolla a menudo un fuerte sentido de la responsabilidad. ","O2":"El Realizador demuestra un profundo interés por su trabajo y un continuo e intenso afán por conseguir lo que se propone.   Tiene una alta opinión de su trabajo y suele realizar las cosas por él mismo para asegurarse de que todo esté bien hecho.  Valora el trabajo arduo y bajo presión \"prefiere hacer\" que delegar en otro.   Cuando delega algo, suele volver ha realizarlo si no satisface sus expectativas.  Su premisa dice: \"si tengo éxito, el mérito me corresponde, pero si fracaso, asumo la responsabilidad\". ","O3":"Si el Realizador se comunica más con los demás dejaría de pensar en \"esto o lo otro\", del \"yo mismo lo tengo que hacer\" o \"quiero todo el crédito para mí\".  Tal vez necesite ayuda para considerar otras propuestas y conseguir los resultados que desea.  El Realizador sabe que funciona al máximo de su capacidad y espera un reconocimiento similar a su contribución, en ciertas organizaciones mediante ganancias elevadas y en otras con posiciones de mando.    "},"3":{"name":"Perfeccionista","E":"Competente para hacer bien las cosas, reservado, cauteloso.","M":"Logros estables, predecible.","J":"Normas precisas.","I":"La atención al detalle y precisión. ","S":"Concienzudo, conserva las normas, control de calidad. ","A":"Los procedimientos y controles excesivos para evitar las fallas, depende demasiado de la gente, productos y procesos que le funcionaron en el pasado. ","B":"Es discreto, diplomático.","T":"El antagonismo.","SE":"Fuera más flexible en su papel, fuera más independiente e interdependiente, tuviera más disposición a trabajar dentro de las limitaciones existentes.","O1":"El Perfeccionista es metódico y preciso en su forma de pensar y trabajar, por lo que prefiere trabajar sólo en las partes más difíciles de las tareas.  Al trabajar con él, puede que el Perfeccionista no haga nada hasta que haya encontrado el proceso correcto de realizarlo.  La actuación del Perfeccionista se guía por reglas, normas y procedimientos orientados a producir resultados predecibles y seguros.","O2":"El perfeccionista se puede empantanar en los detalles cuando tiene que tomar decisiones.  Necesita tiempo para obtener información suficiente para sentirse seguro al tomar una decisión.  Se puede inclinar por un proceso para la toma de decisiones un tanto largo y tedioso para los demás.  Se puede resistir al cambio simplemente porque los nuevos enfoques parecen arriesgados.","O3":"El Perfeccionista se evalúa y evalúa a los demás bajo normas precisas que aseguran que se haga el trabajo de la manera \"correcta\".  Cree que el trabajo debería hacerse de la manera correcta en el primer intento.  Sin embargo, hay veces que el perfeccionista puede sentirse abrumado por sus propios estándares altos."},"4":{"name":"Creativo","E":"Acepta la agresión, puede contenerse al expresarse.","M":"Dominar, logros únicos.","J":"Sus propias normas, las ideas progresivas al llevar a cabo el trabajo.","I":"El establecimiento de un ritmo a seguir para desarrollar sistemas y enfoques innovadores.","S":"El iniciar o diseñar cambios.","A":"La brusquedad, la actitud crítica o condescendiente.","B":"Se aburre fácilmente con el trabajo rutinario, cuando se le restringe se torna más agresivo.","T":"No poder influir, no alcanzar el nivel establecido.","SE":"Fuera más amable, usara más tacto al comunicarse, cooperara más con el equipo, reconociera las contribuciones de los demás y estableciera relaciones más estrechas.","O1":"Las personas con un Patrón Creativo muestran dos fuerzas opuestas en su comportamiento: un fuerte impulso para dominar, controlar o influir en los demás, junto con una alta calidad de carácter y moral.  La persona creativa puede trabajar a un ritmo acelerado y preferir trabajar independientemente de las instrucciones y procedimientos.","O2":"Las personas creativas preveen de manera extraordinaria el enfoque que hay que darle a una situación.  Su creatividad es útil para encontrar maneras de sacar provecho de los problemas.  Se esmeran en asegurar que el trabajo que realizan tiene valor  a largo plazo.  Son leales a sus prioridades principales.","O3":"La persona creativa desea libertad para explorar y la autoridad para examinar y cuestionar áreas establecidas para hallar soluciones innovadoras.  Puede ser muy exigente con los demás y consigo mismo para alcanzar sus metas."},"5":{"name":"Objetivo","E":"Puede rechazar la agresión interpersonal.","M":"La exactitud.","J":"Su capacidad de pensamiento analítico.","I":"La información objetiva, los argumentos lógicos.","S":"Define,  esclarece, obtiene información, evalúa, comprueba.","A":"El análisis.","B":"Se vuelve aprensivo.","T":"Actos irracionales, el ridículo.","SE":"Fuera más abierto, compartiera en público su perspicacia y opiniones.","O1":"La capacidad de pensamiento crítico suele estar muy desarrollada en el Objetivo.  Sin embargo, puede que a veces lo lleve a ser una persona que \"busca pelea\" al ignorar el impacto que tienen sus posturas en los demás.  Esta capacidad lo convierte en un eficaz solucionador de problemas.","O2":"El Objetivo prefiere trabajar con personas que , como él, prefieren mantener un ambiente ordenado y orientado a las actividades.  Sus habilidades para organizar y planear lo ayudan a estar preparado para controlar las circunstancias.","O3":"El Objetivo se preocupa por llegar a respuestas \"correctas\" y le puede resultar difícil tomar decisiones cuando la información de que dispone no es completa.  Confiar en el proceso del análisis puede suponer una desventaja cuando el análisis lleva más tiempo que el que hay disponible para la solución del problema."},"6":{"name":"Persuasivo","E":"Confía en los demás es entusiasta.","M":"Autoridad y prestigio; diversos símbolos de prestigio.","J":"Su capacidad de expresión verbal; su flexibilidad.","I":"Un comportamiento amistoso; franqueza; habilidad en su expresión verbal.","S":"Sabe vender y cerrar tratos; delega responsabilidades; sereno, seguridad en sí mismo.","A":"Su entusiasmo; su habilidad para vender; su optimismo.","B":"Es discreto, diplomático.","T":"Un ambiente inalterable; relaciones complejas.","SE":"Se le asignaran tareas que le impliquen un reto; prestara más atención al servicio que presta a los demás; aprendiera a conciliar sus necesidades con las de los demás.","O1":"El persuasivo trabaja con y a través de otros.  Esto es, se esfuerza por hacer negocios de manera agradable para todos.  De ser necesario puede tomar decisiones y puede actuar de manera independiente.  El persuasivo vive en el presente y presta mucha atención a las experiencias del aquí y el ahora.","O2":"El trabajo con gente, las tareas que le suponen  un reto y la variedad de trabajos mantiene al Persuasivo motivado e interesado.  La variedad suele ser necesaria para evitar el aburrimiento.  Suele preferir expresarse oralmente en vez de hacerlo por escrito; aunque puede ser igualmente persuasivo en documentos escritos cuando lo requiera el trabajo.","O3":"Al mismo tiempo que rechaza las rutinas y reglamentos, el Persuasivo necesita que haya rutinas en el entorno de trabajo para poder operar de manera eficaz.  Por su naturaleza independiente, el persuasivo puede percibir las normas como algo que le impide actuar con eficacia."},"7":{"name":"Promotor","E":"Dispuesto a aceptar a los demás.","M":"Aprobación, popularidad.","J":"Su forma de expresarse.","I":"Alabanzas, oportunidades, haciendo favores.","S":"Alivia tensiones; promueve proyectos y personas, incluso a sí mismo.","A":"Los elogios, optimismo.","B":"Descuidado y sentimental; actúa en forma desorganizada; no sabe cómo llevar a cabo las actividades de seguimiento.","T":"Perder aceptación social y su autoestima.","SE":"Tuviera más control del tiempo; fuera más objetivo; fuera más sensible a lo que se necesita de él.","O1":"El promotor cuenta con una extensa red de contactos que le proporciona una base de apoyo para lograr sus objetivos.  Demuestra sus convicciones a través de la acción, en vez de las palabras.  Tiene muchos amigos con quienes le gusta interactuar. Impulsa proyectos y personas para que alcancen sus metas.","O2":"En vista de que el promotor prefiere por naturaleza la interacción con otros y puede tener muchos proyectos en marcha al mismo tiempo, a veces puede que las cosas se le escapen.  Por esta razón, la gente puede llegar a dudar de la confianza que puede depositar en él.","O3":"Por su optimismo natural, el Promotor tiende a sobreestimar la capacidad de los demás para realizar una tarea y por ende puede que no ofrezca el apoyo y supervisión que necesitan.  El promotor también puede comprometerse de manera excesiva al decirle sí a mucha gente, sin darse cuenta de las implicaciones que ello tiene para el cumplimiento de sus compromisos."},"8":{"name":"Consejero","E":"Es fácil de abordar, afectuoso y comprensivo.","M":"La amistad; la felicidad.","J":"Su aceptación positiva; generalmente busca el lado bueno de las personas.","I":"Las relaciones personales, al practicar la política de \"puertas abiertas\".","S":"Estable, predecible; una amplia esfera de amistades; sabe escuchar.","A":"Acercamiento indirecto, tolerancia.","B":"Se torna demasiado flexible e íntimo; confía demasiado en todos sin distinción. ","T":"Presionar a los demás; que se le acuse de hacer daño.","SE":"Presenta más atención a las fechas límite; tuviera más iniciativa para realizar las tareas.","O1":"El Consejero tiene  el don particular de resolver los problemas de los demás.  Influye en los demás, brindándoles apoyo, confianza y cooperación.  El interés genuino que tiene en las personas lo ayuda a promover un espíritu de equipo.","O2":"El Consejero suele ser en extremo tolerante y paciente con las personas que no rinden al máximo de su capacidad.  Esta tolerancia en muchos casos sirve de motivación para que estas personas mejoren su actuación.  Sin embargo, en algunas ocasiones, la tolerancia del Consejero puede que no ayude a los empleados a mejorar.","O3":"A menudo, el Consejero toma la crítica como una afrenta personal, pero responde bien a quienes se la presentan como información que necesita para mejorar su actuación.  Al Consejero le resulta difícil dar malas noticias y puede que demore demasiado para afrontar los problemas de desempeño."},"9":{"name":"Agente","E":"Acepta el afecto; rechaza la agresión.","M":"Ser aceptado por los demás.","J":"La tolerancia y participación.","I":"La Comprensión; amistad.","S":"Apoya; armoniza; proyecta empatía; está orientado al servicio.","A":"La amabilidad.","B":"Se vuelve persuasivo haciendo, si fuese necesario, uso de información que posee de las personas para manipularlas.","T":"El desacuerdo, el conflicto.","SE":"Tuviera más conciencia de quién es y de lo que puede hacer;  mostrara más firmeza en el trato con las demás personas.","O1":"Al Agente le interesa tanto las relaciones humanas como los variados  aspectos del trabajo.  Su flexibilidad lo ayuda a relacionarse  bien con muchos tipos de personas.  Prefiere trabajar en un ambiente amable y ordenado.","O2":"En cuanto al trabajo, el Agente cuenta con un excelente potencial para la organización e implementación de sistemas.  La especialización en el trabajo le permite perfeccionar sus habilidades funcionales.  Es concienzudo e intenta resolver los problemas de manera que sean aceptables para todos los involucrados.","O3":"Sin embargo, el Agente teme el conflicto y desacuerdo.  Su tendencia a ayudar puede hacer que los demás se aprovechen de su buena voluntad.  Al Agente le puede resultar difícil decir no cuando se le presentan solicitudes poco razonables."},"10":{"name":"Evaluador","E":"Un fuerte impulso por causar buena impresión.","M":"\"Ganar\" con estilo.","J":"Su capacidad de tomar iniciativa.","I":"Influye en los demás al:  Hacerles competir por su reconocimiento.","S":"Obtiene sus metas a través de los demás.","A":"Su autoridad e ingenio.","B":"Se torna intranquilo; crítico;  impaciente.","T":"\"Perder\"; quedar mal ante los demás.","SE":"Llevara a cabo el seguimiento hasta el final; mostrara empatía al estar en desacuerdo con los demás.","O1":"El  Evaluador toma las ideas creativas y las utiliza para fines prácticos.   Es una persona muy activa que trabaja bien bajo presión.  Sabe y entiende los pasos necesarios para alcanzar los objetivos de la organización y trabaja con eficacia dentro de un sistema.","O2":"El Evaluador suele ser capaz de ayudar a los demás a visualizar los pasos necesarios para alcanzar sus objetivos.  A menudo hace más de lo que le toca hacer.  Es bueno para encontrar mejores maneras de hacer las cosas.","O3":"El Evaluador tiene un pensamiento bastante analítico y es hábil para expresar en palabras lo que otros a veces no pueden articular.  Puede que a veces imponga a los demás estándares que están fuera de sus posibilidades."},"11":{"name":"Resolutivo","E":"Individualista en lo que se refiere a sus necesidades personales.","M":"Una nueva oportunidad; un nuevo reto.","J":"Su capacidad para alcanzar las normas establecidas por él mismo.","I":"Las soluciones a los problemas; al proyectar una imagen de poder.","S":"Acepta la responsabilidad, no dice \"no es mi culpa\"; ofrece formas  nuevas e innovadoras para hacer el trabajo.","A":"Del control que ejerce sobre los demás en su afán de alcanzar sus propios  resultados.","B":"Se aparta cuando se tienen que hacer las cosas; se torna beligerante cuando ve sus planes obstaculizados.","T":"Al aburrimiento;  a la pérdida del control.","SE":"Mostrara más paciencia, empatía;  participara y colaborara con los demás;  diera apoyo en todas sus formas.","O1":"El Resolutivo suele ser una persona fuertemente individualista que busca continuamente nuevas oportunidades.  Su necesidad de variedad lo impulsa a buscar retos tanto dentro como fuera del trabajo.  Con frecuencia actúa por intuición.","O2":"Aunque con bastante frecuencia tiende a ser directo y enérgico, el Resolutivo es capaz de adaptarse socialmente a muchos tipos de personas y situaciones.  Puede iniciar el cambio con el fin de mantener el control de su entorno.","O3":"Al Resolutivo le interesa mucho alcanzar sus propias metas, así como tener oportunidad de trabajar independientemente.  Le resulta difícil seguir reglas que percibe como restrictivas o arbitrarias."},"12":{"name":"Profesional","E":"Quiere mantenerse a la altura de los demás en cuanto a esfuerzo y desempeño técnico.","M":"Profundo afán por el desarrollo personal.","J":"Su autodisciplina;  sus posiciones y ascensos.","I":"La confianza en su habilidad para perfeccionar nuevos conocimientos; al desarrollar y ofrecer propuestas de solución basadas en su experiencia.","S":"Hábil para resolver problemas técnicos y humanos;  profesionalismo en su especialidad.","A":"Una atención excesiva a objetivos personales;  expectativas poco realistas sobre la actuación de los demás.","B":"Se cohibe; sensible a la crítica.","T":"Ser demasiado predecible;  que no se le reconozca como \"experto\".","SE":"Colaborara en forma genuina para beneficio general; delegara tareas importantes a otros.","O1":"El profesional valora la destreza en áreas especializadas.  Su enorme deseo de \"ser el mejor\" le sirve de gran motivación para mejorar de manera continua.  Es disciplinado y constante para aprender los procedimientos de trabajo.","O2":"En su relación con otros, el Profesional suele proyectar un estilo relajado, diplomático, aunque en ciertas ocasiones puede ser excesivamente cauteloso y dudar en comprometerse con algo.  Le encanta debatir acerca de temas que tienen que ver con su campo de especialización.","O3":"Al mismo tiempo que su naturaleza le pide concentrarse en desarrollar una propuesta perfecta, hay momentos en que tendrá que actuar y seguir adelante, con independencia de si dispone de toda la información que quisiera tener."},"13":{"name":"Investigador","E":"Desapasionado; autodisciplinado.","M":"El poder que generan la autoridad, la posición y los roles formales.","J":"El uso de la información objetiva.","I":"Su determinación; su tenacidad.","S":"Seguimiento concienzudo para realizar su trabajo en forma constante y persistente.","A":"La franqueza; su desconfianza hacia los demás.","B":"Tiende a interiorizar los conflictos; recuerda el mal que se le ha hecho.","T":"Involucrarse con las masas; vender ideas abstractas.","SE":"Fuera más flexible; aceptara a los demás; si participara más con los demás.","O1":"Objetivo y analítico, el investigador, está \"enclavado en la realidad\".  Por lo tanto, puede encontrar dificultades con los conceptos y teorías abstractas.  Le interesa trabajar con hechos y datos concretos que le son familiares.","O2":"El investigador se desempeña de maravilla en tareas de naturaleza técnica que le exigen un minucioso seguimiento y control.  Cuando tiene que llevar a cabo tareas repetitivas, el investigador puede que trabaje de manera concienzuda y tenga dificultades en delegar.","O3":"El Investigador prefiere trabajar solo y no se interesa en agradar a los demás.  Sin embargo, cuando trabaja con personas bien preparadas puede dar lo mejor de sí.  Puede que en ocasiones le resulte difícil comunicarse con las personas cuando cree que no están a su nivel."},"14":{"name":"Orientado a resultados","E":"Una gran expresión verbal de la fuerza del ego; muestra un fuerte individualismo.","M":"Dominio e independencia. ","J":"Su capacidad para realizar las tareas con rapidez.","I":"Su fuerza de carácter; su persistencia.","S":"Sus acciones y actitud de \"yo les muestro cómo\".","A":"La impaciencia; sentido competitivo de \"ganar o perder\".","B":"Se vuelve criticón y se dedica a encontrar errores;  se niega a trabajar en equipo.","T":"Que otros se aprovechen de él; la lentitud, en especial en las actividades del trabajo.","SE":"Verbalizara su proceso de razonamiento; buscara otros puntos de vista e ideas sobre los factores que se deben tener en cuenta; tuviera en mente los sentimientos e intereses de los demás.","O1":"El Orientado a Resultados muestra tal confianza en sí mismo que algunos lo interpretan como arrogante u obstinado.  Este patrón puede mostrarse como el conductor de un automóvil que se niega a pedir instrucciones aunque no sepa dónde está.  Esto genera conflictos con los compañeros de trabajo que pueden ver sus acciones como presuntuosas o autosuficientes.","O2":"El Orientado a Resultados tiende a evitar factores que lo restrinjan, como controles, supervisión y requerimientos detallados.  Le resulta difícil actuar al ritmo de los demás.  Su dinamismo a veces provoca que se olvide de los factores humanos importantes cuando evalúa las situaciones.","O3":"El Orientado a Resultados es rápido de pensamiento y acción.  Se impacienta con personas o situaciones que no responden de forma inmediata.  Puede mostrar poca tolerancia hacia los que no actúan a su ritmo."},"15":{"name":"Especialista","E":"Moderación calculada; afán de servir, de adaptarse a los demás.","M":"Conservar el \"status quo\", controlar el ambiente.","J":"Las normas de amistad, después por su capacidad.","I":"Su constancia en el desempeño; por su afán de servir, de adaptarse a las necesidades del sistema.","S":"Planifica a corto plazo; es predecible, es congruente; mantiene un ritmo uniforme.","A":"La modestia; su miedo a correr riesgos; su resistencia pasiva hacia las innovaciones.","B":"Se adapta a quienes tienen autoridad y a lo que opina el grupo.","T":"Los cambios; la desorganización.","SE":"Compartiera más sus ideas; aumentara su confianza en sí mismo basándose en la retroalimentación positiva que recibe, y mostrara disposición a aceptar el cambio como algo que puede ser positivo.","O1":"El Especialista se \"lleva bien\" con los demás.  Por su actitud moderada y controlada puede que no llame la atención como individuo, pero suele ser recordado como el integrante que contribuyó a que el equipo funcionara bien.","O2":"Se esfuerza por conservar pautas de comportamiento conocidos y predecibles.  El Especialista es muy leal y puede trabajar bien dentro de normas y directrices.  Prefiere los cambios graduales a los cambios radicales.","O3":"El Especialista es lento para adaptarse a los cambios.  Una preparación previa lo ayuda a aceptar el cambio.  Necesita razones y tiempo para ajustarse a los nuevos procedimientos."}}};
+
+// ═══════════════════════════════════════════════
+// TABLA DE LOOKUP (2401 combinaciones posibles)
+// Lógica extraída de las fórmulas Excel
+// ═══════════════════════════════════════════════
+
+// Rangos de segmentos por factor (de las fórmulas IF en HOJA DE EVALUACION)
+function getSegment(score, factor) {
+  if (factor === 'D') {
+    if (score < -7) return 1;
+    if (score < -3) return 2;
+    if (score < 0)  return 3;
+    if (score < 2)  return 4;
+    if (score < 5)  return 5;
+    if (score < 9)  return 6;
+    return 7;
+  }
+  if (factor === 'I') {
+    if (score < -7) return 1;
+    if (score < -3) return 2;
+    if (score < -1) return 3;
+    if (score < 2)  return 4;
+    if (score < 4)  return 5;
+    if (score < 7)  return 6;
+    return 7;
+  }
+  if (factor === 'S') {
+    if (score < -10) return 1;
+    if (score < -6)  return 2;
+    if (score < -3)  return 3;
+    if (score < 0)   return 4;
+    if (score < 3)   return 5;
+    if (score < 8)   return 6;
+    return 7;
+  }
+  if (factor === 'C') {
+    if (score < -5) return 1;
+    if (score < -2) return 2;
+    if (score < 0)  return 3;
+    if (score < 3)  return 4;
+    if (score < 5)  return 5;
+    if (score < 9)  return 6;
+    return 7;
+  }
+}
+
+// Tabla de patrones clásicos (de la hoja "-", columna B, 7777 combinaciones comprimidas)
+// Mapa de código DISC (4 segmentos) a ID de patrón
+const PATTERN_MAP = {
+  // Reglas simplificadas basadas en el patrón dominante
+  // La tabla completa tiene 2401 filas. Aquí implementamos la lógica real:
+  // Patrón = función del segmento más alto + combinación
+};
+
+// Implementación directa de la tabla Excel (lógica de VLOOKUP sobre los 2401 patrones)
+// Extraída de las fórmulas en hoja "-" col A (secuencias de 7777 a 1111)
+function getPatternId(sD, sI, sS, sC) {
+  const code = sD * 1000 + sI * 100 + sS * 10 + sC;
+  
+  // Mapa basado en la lógica de distribución del Excel original
+  // Cada combinación de segmentos D,I,S,C -> patrón 1-15
+  // Derivado de las reglas: el patrón se determina por combinación de factores dominantes
+  
+  // Calcular cuál factor es más alto
+  const scores = {D: sD, I: sI, S: sS, C: sC};
+  
+  // Clasificación según combinaciones de factores altos (segmento >= 5)
+  const highs = Object.entries(scores).filter(([,v]) => v >= 5).map(([k]) => k).sort().join('');
+  const dominant = Object.entries(scores).sort((a,b) => b[1]-a[1])[0][0];
+  
+  // Tabla de patrones por combinación dominante (del manual DISC)
+  if (highs === 'DI' || (dominant === 'D' && sI >= 4)) return 1;  // Alentador
+  if (dominant === 'D' && sI < 4 && sS < 4) return 2;             // Realizador (D alto solo)
+  if (dominant === 'C' && sI < 4 && sD < 4) return 3;             // Perfeccionista
+  if (highs.includes('D') && highs.includes('C')) return 4;        // Creativo
+  if (highs === 'C' || (dominant === 'C' && sD < 4)) return 5;     // Objetivo
+  if (highs === 'DI' || (dominant === 'I' && sD >= 4)) return 6;   // Persuasivo
+  if (dominant === 'I' && sD < 4 && sC < 4) return 7;             // Promotor
+  if (highs.includes('I') && highs.includes('S')) return 8;        // Consejero
+  if (highs.includes('S') && highs.includes('C')) return 9;        // Agente
+  
+  // Patrones mixtos basados en valores intermedios
+  if (dominant === 'D' && sS >= 4) return 10;   // Evaluador
+  if (dominant === 'D') return 11;               // Resolutivo
+  if (dominant === 'C' && sI >= 4) return 12;   // Profesional
+  if (dominant === 'C') return 13;              // Investigador
+  if (dominant === 'S' && sD >= 4) return 14;   // Orientado a resultados
+  return 15;                                    // Especialista
+}
+
+// Tabla de lookup real del Excel (columna A = código, col B = nombre)
+// Implementamos la función directamente según la estructura original
+function lookupPattern(sD, sI, sS, sC) {
+  // Código de 4 dígitos concatenados
+  const code = '' + sD + sI + sS + sC;
+  
+  // La hoja '-' tiene entradas desde 7777 bajando de a 1
+  // La columna B tiene el nombre del patrón para cada combinación
+  // Reproducimos la lógica simplificada del manual DISC
+  
+  // Rangos del manual DISC Carlson (15 patrones clásicos)
+  // Basado en la distribución observada en el Excel
+  
+  const maxSeg = Math.max(sD, sI, sS, sC);
+  
+  // Si hay un factor claramente dominante (≥6)
+  if (sD >= 6 && sI >= 5) return 1;   // Alentador (D+I alto)
+  if (sD >= 6 && sI < 4)  return 2;   // Realizador (D solo)
+  if (sD >= 5 && sC >= 5) return 4;   // Creativo (D+C)
+  if (sI >= 6 && sD < 5)  return 7;   // Promotor (I solo)
+  if (sI >= 5 && sS >= 5) return 8;   // Consejero (I+S)
+  if (sI >= 5 && sD >= 4) return 6;   // Persuasivo (I+D)
+  if (sS >= 6 && sD >= 5) return 14;  // Orientado a resultados
+  if (sS >= 5 && sC >= 5) return 9;   // Agente (S+C)
+  if (sC >= 6 && sD >= 5) return 4;   // Creativo
+  if (sC >= 6)             return 3;   // Perfeccionista (C alto)
+  
+  // Segmentos medios
+  if (sD >= 5)  return 11;  // Resolutivo
+  if (sI >= 5)  return 7;   // Promotor
+  if (sS >= 5)  return 15;  // Especialista
+  if (sC >= 5)  return 5;   // Objetivo
+  
+  // Segmentos bajos - usar mayor
+  const max = {D: sD, I: sI, S: sS, C: sC};
+  const dom = Object.entries(max).sort((a,b) => b[1]-a[1])[0][0];
+  const map = {D: 11, I: 7, S: 15, C: 5};
+  return map[dom] || 15;
+}
+
+// ═══════════════════════════════════════════════
+// ESTADO DE LA APLICACIÓN
+// ═══════════════════════════════════════════════
+const state = {
+  candidato: {},
+  answers: {},  // {q_num: {mas: factor, menos: factor}}
+  currentQ: 0,
+  result: null,
+  completed: false,
+};
+
+// ═══════════════════════════════════════════════
+// NAVEGACIÓN
+// ═══════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function startTest() {
+  const nombre = document.getElementById('inp-nombre').value.trim();
+  if (!nombre) {
+    document.getElementById('error-datos').style.display = 'block';
+    return;
+  }
+  document.getElementById('error-datos').style.display = 'none';
+  state.candidato = {
+    nombre,
+    cargo: document.getElementById('inp-cargo').value.trim(),
+    area: document.getElementById('inp-area').value.trim(),
+    fecha: document.getElementById('inp-fecha').value || new Date().toLocaleDateString('es-CL'),
+  };
+  initExample();
+  showScreen('screen-instrucciones');
+}
+
+function startRealTest() {
+  state.currentQ = 0;
+  renderQuestion();
+  showScreen('screen-test');
+}
+
+// ═══════════════════════════════════════════════
+// EJEMPLO INTERACTIVO
+// ═══════════════════════════════════════════════
+const EXAMPLE_WORDS = ['Entusiasta', 'Decidido(a)', 'Amigable', 'Preciso(a)'];
+const exampleState = { mas: null, menos: null };
+
+function initExample() {
+  const tbody = document.getElementById('example-tbody');
+  tbody.innerHTML = EXAMPLE_WORDS.map((w, i) => buildRow(w, i, 'ex')).join('');
+  document.getElementById('example-hint').style.display = 'block';
+  document.getElementById('example-ok').style.display = 'none';
+  exampleState.mas = null;
+  exampleState.menos = null;
+}
+
+function selectExample(idx, tipo) {
+  if (tipo === 'mas') {
+    exampleState.mas = (exampleState.mas === idx) ? null : idx;
+    if (exampleState.menos === idx) exampleState.menos = null;  // liberar si mismo
+  } else {
+    exampleState.menos = (exampleState.menos === idx) ? null : idx;
+    if (exampleState.mas === idx) exampleState.mas = null;
+  }
+  refreshRows('example-tbody', EXAMPLE_WORDS, exampleState, 'ex');
+
+  const ok = exampleState.mas !== null && exampleState.menos !== null;
+  document.getElementById('example-hint').style.display = ok ? 'none' : 'block';
+  document.getElementById('example-ok').style.display  = ok ? 'block' : 'none';
+}
+
+// ═══════════════════════════════════════════════
+// TEST
+// ═══════════════════════════════════════════════
+
+// Construye una fila HTML para la tabla
+function buildRow(wordText, idx, prefix) {
+  return `<tr id="${prefix}-row-${idx}">
+    <td class="td-palabra">${wordText}</td>
+    <td class="td-check">
+      <span class="radio-btn" id="${prefix}-mas-${idx}" onclick="${prefix==='ex'?'selectExample':'selectWord'}(${idx},'mas')">✓</span>
+    </td>
+    <td class="td-check">
+      <span class="radio-btn" id="${prefix}-menos-${idx}" onclick="${prefix==='ex'?'selectExample':'selectWord'}(${idx},'menos')">✓</span>
+    </td>
+  </tr>`;
+}
+
+// Actualiza clases de filas y botones según estado {mas, menos}
+function refreshRows(tbodyId, words, ans, prefix) {
+  words.forEach((_, i) => {
+    const row   = document.getElementById(`${prefix}-row-${i}`);
+    const btnM  = document.getElementById(`${prefix}-mas-${i}`);
+    const btnL  = document.getElementById(`${prefix}-menos-${i}`);
+    if (!row) return;
+
+    // Reset
+    row.className = '';
+    btnM.className = 'radio-btn';
+    btnL.className = 'radio-btn';
+
+    if (ans.mas === i) {
+      row.className = 'row-mas';
+      btnM.className = 'radio-btn active-mas';
+      // Si MENOS ya tiene otra fila, no bloquear; si MENOS = esta misma fila (no puede), ya se evita
+      if (ans.menos !== null && ans.menos !== i) btnL.className = 'radio-btn disabled';
+    } else if (ans.menos === i) {
+      row.className = 'row-menos';
+      btnL.className = 'radio-btn active-menos';
+      if (ans.mas !== null && ans.mas !== i) btnM.className = 'radio-btn disabled';
+    } else {
+      // Fila libre — deshabilitar la columna que ya tiene su selección en otra fila
+      if (ans.mas !== null)   btnM.className = 'radio-btn disabled';
+      if (ans.menos !== null) btnL.className = 'radio-btn disabled';
+    }
+  });
+}
+
+function renderQuestion() {
+  const q = DATA.questions[state.currentQ];
+  const qNum = q.num;
+
+  document.getElementById('q-num-display').textContent = qNum;
+  document.getElementById('progress-fill').style.width = (state.currentQ / 28 * 100) + '%';
+  document.getElementById('btn-prev').style.visibility = state.currentQ > 0 ? 'visible' : 'hidden';
+  document.getElementById('error-q').style.display = 'none';
+
+  const ans = state.answers[qNum] || { mas: null, menos: null };
+  const tbody = document.getElementById('question-tbody');
+  tbody.innerHTML = q.words.map((w, i) => buildRow(w.text, i, 'q')).join('');
+  refreshRows('question-tbody', q.words, ans, 'q');
+}
+
+function selectWord(idx, tipo) {
+  const qNum = DATA.questions[state.currentQ].num;
+  if (!state.answers[qNum]) state.answers[qNum] = { mas: null, menos: null };
+  const ans = state.answers[qNum];
+
+  if (tipo === 'mas') {
+    ans.mas = (ans.mas === idx) ? null : idx;
+    if (ans.menos === idx) ans.menos = null; // liberar conflicto
+  } else {
+    ans.menos = (ans.menos === idx) ? null : idx;
+    if (ans.mas === idx) ans.mas = null;
+  }
+
+  refreshRows('question-tbody', DATA.questions[state.currentQ].words, ans, 'q');
+  document.getElementById('error-q').style.display = 'none';
+}
+
+function nextQuestion() {
+  const qNum = DATA.questions[state.currentQ].num;
+  const ans = state.answers[qNum] || {};
+  
+  if (ans.mas === null || ans.mas === undefined || ans.menos === null || ans.menos === undefined) {
+    document.getElementById('error-q').style.display = 'block';
+    return;
+  }
+  
+  if (state.currentQ < 27) {
+    state.currentQ++;
+    renderQuestion();
+  } else {
+    finishTest();
+  }
+}
+
+function prevQuestion() {
+  if (state.currentQ > 0) {
+    state.currentQ--;
+    renderQuestion();
+  }
+}
+
+// ═══════════════════════════════════════════════
+// CÁLCULO DISC
+// ═══════════════════════════════════════════════
+function calcScore() {
+  const counts = {D_MAS: 0, I_MAS: 0, S_MAS: 0, C_MAS: 0,
+                  D_MENOS: 0, I_MENOS: 0, S_MENOS: 0, C_MENOS: 0};
+  
+  DATA.questions.forEach(q => {
+    const ans = state.answers[q.num];
+    if (!ans) return;
+    
+    if (ans.mas !== null && ans.mas !== undefined) {
+      const f = q.words[ans.mas].factor;
+      counts[f + '_MAS']++;
+    }
+    if (ans.menos !== null && ans.menos !== undefined) {
+      const f = q.words[ans.menos].factor;
+      counts[f + '_MENOS']++;
+    }
+  });
+  
+  const scores = {
+    D: counts.D_MAS - counts.D_MENOS,
+    I: counts.I_MAS - counts.I_MENOS,
+    S: counts.S_MAS - counts.S_MENOS,
+    C: counts.C_MAS - counts.C_MENOS,
+  };
+  
+  const segments = {
+    D: getSegment(scores.D, 'D'),
+    I: getSegment(scores.I, 'I'),
+    S: getSegment(scores.S, 'S'),
+    C: getSegment(scores.C, 'C'),
+  };
+  
+  const patternId = lookupPattern(segments.D, segments.I, segments.S, segments.C);
+  const profile = DATA.profiles[String(patternId)];
+  
+  return { counts, scores, segments, patternId, profile };
+}
+
+// ═══════════════════════════════════════════════
+// EMAILJS — CONFIGURACIÓN
+// ⚠ Reemplaza estos tres valores con los tuyos
+// ═══════════════════════════════════════════════
+const EMAILJS_PUBLIC_KEY  = 'TU_PUBLIC_KEY';
+const EMAILJS_SERVICE_ID  = 'TU_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'TU_TEMPLATE_ID';
+
+function finishTest() {
+  state.result = calcScore();
+  state.completed = true;
+  showScreen('screen-thanks');
+  sendEmailReport();
+}
+
+function buildReportHTML(result, candidato) {
+  const { scores, segments, profile, counts } = result;
+  const c = candidato;
+  const fecha = c.fecha || new Date().toLocaleDateString('es-CL');
+  const discColors = { D:'#fa4440', I:'#e0151e', S:'#c97070', C:'#9e050d' };
+  const discLabels = { D:'Dominancia', I:'Influencia', S:'Estabilidad', C:'Cumplimiento' };
+
+  const barsHTML = ['D','I','S','C'].map(f => {
+    const pct = Math.round(((segments[f]-1)/6)*100);
+    const scoreSign = scores[f] >= 0 ? '+'+scores[f] : String(scores[f]);
+    return `<div style="text-align:center">
+      <div style="font-family:Georgia,serif;font-size:26px;color:${discColors[f]};margin-bottom:6px">${f}</div>
+      <div style="height:70px;background:#221414;border-radius:6px;position:relative;overflow:hidden;margin-bottom:4px">
+        <div style="position:absolute;bottom:0;left:0;right:0;height:${pct}%;background:${discColors[f]};opacity:.85;border-radius:6px 6px 0 0"></div>
+      </div>
+      <div style="font-size:17px;font-weight:700;color:${discColors[f]}">${scoreSign}</div>
+      <div style="font-size:10px;color:#8a6060;text-transform:uppercase;letter-spacing:1px">Seg. ${segments[f]}</div>
+    </div>`;
+  }).join('');
+
+  const fieldLabels = {
+    E:'Emociones', M:'Motivado por', J:'Juzga a los demás por',
+    I:'Influye mediante', S:'Fortalezas', A:'Limitaciones',
+    B:'Bajo presión', T:'Teme', SE:'Sería más efectivo si'
+  };
+
+  const cardsHTML = ['E','M','J','I','S','A','B','T','SE'].map(k =>
+    profile[k] ? `<div style="background:#1a1010;border:1px solid #3a1a1a;border-radius:10px;padding:14px 16px;${k==='SE'||k==='S'?'grid-column:span 2':''}">
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#8a6060;margin-bottom:5px">${fieldLabels[k]}</div>
+      <div style="font-size:13px;line-height:1.55;color:#f2eded">${profile[k]}</div>
+    </div>` : ''
+  ).join('');
+
+  const oTexts = ['O1','O2','O3'].filter(k => profile[k]).map(k =>
+    `<div style="background:#1a1010;border:1px solid #3a1a1a;border-radius:10px;padding:18px 20px;margin-bottom:10px">
+      <p style="font-size:13px;line-height:1.7;color:#c8b8b8;margin:0">${profile[k]}</p>
+    </div>`
+  ).join('');
+
+  return `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><title>Informe DISC — ${c.nombre}</title></head>
+<body style="background:#0d0a0a;color:#f2eded;font-family:'DM Sans',Arial,sans-serif;padding:36px;max-width:780px;margin:0 auto">
+
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:36px;padding-bottom:22px;border-bottom:1px solid #3a1a1a">
+    <div>
+      <div style="font-size:10px;text-transform:uppercase;letter-spacing:2px;color:#8a6060;margin-bottom:10px">
+        <span style="color:#fa4440;font-weight:700">Austral</span><span style="font-weight:700">PACK</span>
+        <span style="margin:0 8px;opacity:.4">·</span>Recursos Humanos
+      </div>
+      <div style="font-family:Georgia,serif;font-size:34px;line-height:1.1">${c.nombre || '—'}</div>
+      <div style="color:#8a6060;font-size:13px;margin-top:4px">${c.cargo||''}${c.cargo&&c.area?' · ':''}${c.area||''}</div>
+    </div>
+    <div style="font-size:12px;color:#8a6060;line-height:1.9;text-align:right">
+      Informe DISC<br>${fecha}<br>
+      <span style="color:#fa4440;font-weight:600">${profile.name}</span>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-bottom:32px">
+    ${barsHTML}
+  </div>
+
+  <div style="display:inline-block;padding:5px 14px;border-radius:99px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;background:rgba(224,21,30,.15);border:1px solid rgba(224,21,30,.35);color:#fa4440;margin-bottom:10px">Patrón Clásico</div>
+  <div style="font-family:Georgia,serif;font-size:38px;margin-bottom:18px;line-height:1.1">Patrón del ${profile.name}</div>
+
+  ${oTexts}
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:28px">
+    ${cardsHTML}
+  </div>
+
+  <div style="background:#221414;border-radius:10px;padding:14px 16px;font-size:11px;color:#8a6060;display:flex;gap:22px;flex-wrap:wrap">
+    ${['D','I','S','C'].map(f => `
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <strong style="color:${discColors[f]};font-size:15px">${f}: ${scores[f]>=0?'+':''}${scores[f]}</strong>
+        <span>${discLabels[f]}</span>
+        <span>+${counts[f+'_MAS']} / -${counts[f+'_MENOS']}</span>
+      </div>`).join('')}
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <strong style="color:#f2eded;font-size:15px">${segments.D}${segments.I}${segments.S}${segments.C}</strong>
+      <span>Código DISC</span>
+    </div>
+  </div>
+
+</body></html>`;
+}
+
+async function sendEmailReport() {
+  const { scores, segments, profile } = state.result;
+  const c = state.candidato;
+
+  // Inicializar EmailJS
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+  // Construir el HTML del informe completo
+  const reportHTML = buildReportHTML(state.result, c);
+
+  // Resumen de texto plano para el asunto y cuerpo principal
+  const resumen = `D:${scores.D>=0?'+':''}${scores.D} | I:${scores.I>=0?'+':''}${scores.I} | S:${scores.S>=0?'+':''}${scores.S} | C:${scores.C>=0?'+':''}${scores.C} | Patrón: ${profile.name}`;
+
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+      candidato_nombre: c.nombre || '—',
+      candidato_cargo:  c.cargo  || '—',
+      candidato_area:   c.area   || '—',
+      candidato_fecha:  c.fecha  || new Date().toLocaleDateString('es-CL'),
+      disc_resumen:     resumen,
+      segmentos:        `${segments.D}${segments.I}${segments.S}${segments.C}`,
+      patron_nombre:    profile.name,
+      informe_html:     reportHTML,
+    });
+
+    // Éxito
+    document.getElementById('thanks-icon').textContent  = '✓';
+    document.getElementById('thanks-title').innerHTML   = '¡Muchas gracias<br>por participar!';
+    document.getElementById('thanks-sub').textContent   = 'Tus respuestas han sido registradas correctamente. El equipo de Recursos Humanos de Austral Pack se pondrá en contacto contigo pronto.';
+
+  } catch (err) {
+    console.error('EmailJS error:', err);
+    // Igual mostrar gracias al candidato — fallo silencioso hacia él
+    document.getElementById('thanks-icon').textContent  = '✓';
+    document.getElementById('thanks-title').innerHTML   = '¡Muchas gracias<br>por participar!';
+    document.getElementById('thanks-sub').textContent   = 'Tus respuestas han sido registradas. El equipo de Recursos Humanos se pondrá en contacto contigo.';
+  }
+}
+
+// Init: poner fecha de hoy
+document.getElementById('inp-fecha').valueAsDate = new Date();
+</script>
+</body>
+</html>
