@@ -1054,9 +1054,9 @@ function calcScore() {
 // EMAILJS — CONFIGURACIÓN
 // ⚠ Reemplaza estos tres valores con los tuyos
 // ═══════════════════════════════════════════════
-const EMAILJS_PUBLIC_KEY  = 'nD0-T5Ccmq9JDy6lr';
-const EMAILJS_SERVICE_ID  = 'service_ksbo7qh';
-const EMAILJS_TEMPLATE_ID = 'template_qsjvlpv';
+const EMAILJS_PUBLIC_KEY  = 'TU_PUBLIC_KEY';
+const EMAILJS_SERVICE_ID  = 'TU_SERVICE_ID';
+const EMAILJS_TEMPLATE_ID = 'TU_TEMPLATE_ID';
 
 function finishTest() {
   state.result = calcScore();
@@ -1163,7 +1163,12 @@ async function sendEmailReport() {
   // Construir el HTML del informe completo
   const reportHTML = buildReportHTML(state.result, c);
 
-  // Resumen de texto plano para el asunto y cuerpo principal
+  // Generar data URI para descarga directa desde el correo
+  const b64 = btoa(unescape(encodeURIComponent(reportHTML)));
+  const nombreArchivo = `DISC_${(c.nombre||'candidato').replace(/\s+/g,'_')}.html`;
+  const downloadLink = `<a href="data:text/html;base64,${b64}" download="${nombreArchivo}" style="display:inline-block;margin-top:20px;padding:12px 24px;background:#e0151e;color:#f2eded;font-family:Arial,sans-serif;font-size:14px;font-weight:700;text-decoration:none;border-radius:8px">⬇ Descargar informe HTML</a>`;
+
+  // Resumen de texto plano para el asunto
   const resumen = `D:${scores.D>=0?'+':''}${scores.D} | I:${scores.I>=0?'+':''}${scores.I} | S:${scores.S>=0?'+':''}${scores.S} | C:${scores.C>=0?'+':''}${scores.C} | Patrón: ${profile.name}`;
 
   try {
@@ -1176,6 +1181,7 @@ async function sendEmailReport() {
       segmentos:        `${segments.D}${segments.I}${segments.S}${segments.C}`,
       patron_nombre:    profile.name,
       informe_html:     reportHTML,
+      download_link:    downloadLink,
     });
 
     // Éxito
